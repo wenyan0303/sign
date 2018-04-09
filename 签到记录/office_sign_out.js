@@ -45,31 +45,37 @@ $(function () {
       });
   });
 
-  // 员工签出处理
-  var limit = 11;
-    var offset = 0;
-    // $("#btn").click(function () {
-        Qiandao(limit, offset, function (response) {
-            var count = response.rows;
-            for (var i = 0; i < count.length; i++) {
-                if(count[i].sign_type.includes('签出')){
-                  var sign_out='<label class="weui-cell weui-check__label"><div class="weui-cell__bd">' + count[i].sign_type + ' <span>' + count[i].staff_name + '</span></div><div class="weui-cell__ft">' + count[i].ctime + '</div></label>'
-                  $("#tab").append(sign_out);
-                }
-            }
 
+});
+
+// 员工签到处理
+function staff_sign(latitude, longitude) {
+  var $this = $(this);
+  var api_url = 'office_sign.php';
+  var post_data = {sign_type: '白金湾339签出', latitude: latitude, longitude: longitude};
+  // 员工签到处理
+  CallApi(api_url, post_data, function (response) {
+    Toast('签出成功');
+
+     // 展示员工签到记录
+    signIn(limit, offset, function (response) {
+      var count = response.rows;
+      for (var i = 0; i < count.length; i++) {
+        var sign_in = '<label class="weui-cell weui-check__label"><div class="weui-cell__bd">' + count[i].sign_type + ' <span>' + count[i].staff_name + '</span></div><div class="weui-cell__ft">' + count[i].ctime + '</div></label>';
+        $("#tab").append(sign_in);
+          }
         }, function (response) {
             console.log(response.errmsg)
         });
 
-
-});
+  }, function (response) {
+    AlertDialog(response.errmsg);
+  });
+}
 
 // 获取签到记录
-function Qiandao(limit, offset, suc_func, error_func) {
+function signIn(limit, offset, suc_func, error_func) {
     var api_url = 'http://www.fnying.com/staff/api/office_sign_log.php';
     var post_data = {"limit": limit, "offset": offset};
     CallApi(api_url, post_data, suc_func, error_func);
 }
-
-
